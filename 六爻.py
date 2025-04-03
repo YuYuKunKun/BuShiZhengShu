@@ -1,16 +1,16 @@
-# -*- coding: utf-8 -*-
 """
 此文件根据 文始道文化《卜筮正术》编纂。
 关于艮为什么五行属金；乾为什么五行属土？自己去看https://wq.wenshidao.com/app/index.php?i=8&c=entry&op=display&id=43&do=lesson&m=fy_lessonv2
 """
+# -*- coding: utf-8 -*-
+# @Time    : 2022/08/15 16:45
+# @Author  : YuYuKunKun
+# @File    : 六爻.py
 
-import os
-import re
 import math
 import random
-import argparse
-import functools
 import traceback
+import functools
 
 from enum import Enum
 from typing import List, Union
@@ -20,10 +20,6 @@ from datetime import datetime, timedelta
 import svg
 import ephem
 # import sxtwl
-from flask import Flask, request, render_template
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-
 
 
 # 天干和地支的周期表
@@ -222,9 +218,6 @@ def 太阳时():
 
 
 class config:
-    '''
-    默认乾卦属土，艮卦属金！
-    '''
     五行 = 0
 
 
@@ -3052,7 +3045,7 @@ class 六爻占卜:
             elements=elements,
         )
 
-        with open("/sdcard/test.svg", "w") as f:
+        with open("test.svg", "w") as f:
             f.write(result.as_str())
 
         return result.as_str()
@@ -3114,7 +3107,7 @@ class 六爻占卜:
             elements=elements,
         )
 
-        with open("/sdcard/test.svg", "w") as f:
+        with open("test.svg", "w") as f:
             f.write(result.as_str())
 
         return result.as_str()
@@ -3828,7 +3821,7 @@ class SVG:
             height=190,
             elements=elements,
         )
-        with open("/sdcard/test2.svg", "w") as f:
+        with open("test2.svg", "w") as f:
             f.write(result.as_str())
         return elements
 
@@ -4025,6 +4018,12 @@ def 枚卜丸(卦, 月, 日):
 
 
 if __name__ == "__main__":
+    import os, re
+    import argparse
+    from flask import Flask, request, render_template
+    from flask_limiter import Limiter
+    from flask_limiter.util import get_remote_address
+
     干 = ""
     for i in 天干:
         干 += i.name
@@ -4036,10 +4035,10 @@ if __name__ == "__main__":
         卦 += i.value
     for i in "为火水风雷山泽天地":
         卦 = 卦.replace(i, "")
-    print(f"([{干}{支}]+)月([{干}{支}]+)日\S+([{卦}]+之[{卦}]+)")
-    regex = re.compile(f"([{干}{支}]+)月([{干}{支}]+)日\S+([{卦}]+之[{卦}]+)")
+    print(fr"([{干}{支}]+)月([{干}{支}]+)日\S+([{卦}]+之[{卦}]+)")
+    regex = re.compile(fr"([{干}{支}]+)月([{干}{支}]+)日\S+([{卦}]+之[{卦}]+)")
     regex = re.compile(
-        "([甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]{1,2})月([甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]{2})日\S+?([坤剥比观豫晋萃否谦艮蹇渐小过旅咸遁师蒙坎涣解未济困讼升蛊井巽恒鼎大过姤复颐屯益震噬嗑随无妄明夷贲既济家人丰离革同人临损节中孚归妹睽兑履泰大畜需小畜大壮大有夬乾归]+[之变]?[坤剥比观豫晋萃否谦艮蹇渐小过旅咸遁师蒙坎涣解未济困讼升蛊井巽恒鼎大过姤复颐屯益震噬嗑随无妄明夷贲既济家人丰离革同人临损节中孚归妹睽兑履泰大畜需小畜大壮大有夬乾归]{0,2})"
+        r"([甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]{1,2})月([甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]{2})日\S+?([坤剥比观豫晋萃否谦艮蹇渐小过旅咸遁师蒙坎涣解未济困讼升蛊井巽恒鼎大过姤复颐屯益震噬嗑随无妄明夷贲既济家人丰离革同人临损节中孚归妹睽兑履泰大畜需小畜大壮大有夬乾归]+[之变]?[坤剥比观豫晋萃否谦艮蹇渐小过旅咸遁师蒙坎涣解未济困讼升蛊井巽恒鼎大过姤复颐屯益震噬嗑随无妄明夷贲既济家人丰离革同人临损节中孚归妹睽兑履泰大畜需小畜大壮大有夬乾归]{0,2})"
     )
 
     app = Flask(__name__)
