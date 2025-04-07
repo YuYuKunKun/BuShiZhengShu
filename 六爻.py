@@ -1,16 +1,19 @@
-"""
-此文件根据 文始道文化《卜筮正术》编纂。
-关于艮为什么五行属金；乾为什么五行属土？自己去看https://wq.wenshidao.com/app/index.php?i=8&c=entry&op=display&id=43&do=lesson&m=fy_lessonv2
-"""
 # -*- coding: utf-8 -*-
 # @Time    : 2022/08/15 16:45
 # @Author  : YuYuKunKun
 # @File    : 六爻.py
+"""
+此文件根据 文始道文化《卜筮正术》编纂。
+关于艮为什么五行属金；乾为什么五行属土？自己去看https://wq.wenshidao.com/app/index.php?i=8&c=entry&op=display&id=43&do=lesson&m=fy_lessonv2
+"""
 
+import os
+import re
 import math
 import random
-import traceback
+import argparse
 import functools
+import traceback
 
 from enum import Enum
 from typing import List, Union
@@ -20,6 +23,10 @@ from datetime import datetime, timedelta
 import svg
 import ephem
 # import sxtwl
+from flask import Flask, request, render_template
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 
 
 # 天干和地支的周期表
@@ -218,6 +225,9 @@ def 太阳时():
 
 
 class config:
+    '''
+    默认乾卦属土，艮卦属金！
+    '''
     五行 = 0
 
 
@@ -4012,18 +4022,17 @@ def 枚卜丸(卦, 月, 日):
     a = 六爻占卜(本卦.value + "之" + 之卦.value, 花甲.甲辰, 花甲(月), 花甲(日))
     return a
 
+def 太极丸(六峜卦: List[str], 月: Union[花甲, str], 日: Union[花甲, str]):
+    ...
+    
+    
+    
 
 # 362880
 # 40320
 
 
 if __name__ == "__main__":
-    import os, re
-    import argparse
-    from flask import Flask, request, render_template
-    from flask_limiter import Limiter
-    from flask_limiter.util import get_remote_address
-
     干 = ""
     for i in 天干:
         干 += i.name
@@ -4050,7 +4059,7 @@ if __name__ == "__main__":
     )
 
     @app.route("/")
-    def main():
+    def 机选():
         random.seed(os.urandom(8))
         a = 六爻占卜(
             f"{random.choice(list(六十四重卦)).value}之{random.choice(list(六十四重卦)).value}",
@@ -4064,7 +4073,7 @@ if __name__ == "__main__":
         return result
 
     @app.route("/2")
-    def main2():
+    def 机选2():
         random.seed(os.urandom(8))
         a = 六爻占卜(
             f"{random.choice(list(六十四重卦)).value}之{random.choice(list(六十四重卦)).value}",
@@ -4079,6 +4088,9 @@ if __name__ == "__main__":
 
     @app.route("/3")
     def main3():
+        """
+        http://localhost:40320/?g=乾之坤&r=甲辰&=乙巳
+        """
         t = request.args.get("t", 0)
         卦 = request.args.get("g", "")
         日 = request.args.get("r", "")
@@ -4109,6 +4121,10 @@ if __name__ == "__main__":
     @app.route("/5")
     @limiter.limit("45/min", override_defaults=False)
     def main5():
+        """
+        参数 g 为枚卜丸图案{方，圆，一，二，三，四，五，六}
+        http://localhost:40320/?g=二三三&r=甲辰&=乙巳
+        """
         卦 = request.args.get("g", "")
         日 = request.args.get("r", "")
         月 = request.args.get("y", "")
@@ -4127,6 +4143,10 @@ if __name__ == "__main__":
 
     @app.route("/6")
     def main6():
+        """
+        参数 s 例子: 卯月甲寅日，占风水，得“困之节”
+        http://127.0.0.1:40320/6?s=卯月甲寅日，占风水，得“困之节”
+        """
         t = request.args.get("t", 0)
         s = request.args.get("s", "")
         月, 日, 卦 = regex.findall(s)[0]
@@ -4157,6 +4177,11 @@ if __name__ == "__main__":
     @app.route("/7")
     @limiter.limit("45/min", override_defaults=False)
     def main7():
+        """
+        参数 g 例子: 困之节
+        http://127.0.0.1:40320/7?g=困之节
+        以天津的本地时间的日月
+        """
         卦 = request.args.get("g", "")
         年, 月, 日, 时 = 太阳时()
         try:
